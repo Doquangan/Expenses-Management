@@ -1,0 +1,16 @@
+.category-page {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 32px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.category-page h2 {
+  margin-bottom: 16px;
+  color: #2d7be5;
+}
+.category-page p {
+  font-size: 1.1rem;
+  color: #444;
+}

@@ -1,0 +1,253 @@
+/* Layout */
+.expense-page {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 32px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.expense-page h2 {
+  margin-bottom: 24px;
+  color: #2d7be5;
+}
+
+/* Filters */
+.expense-filters {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: center;
+}
+.expense-filters select,
+.expense-filters input {
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1.5px solid #b3d3fa;
+  font-size: 1.05rem;
+  background: #f5f7fa;
+  color: #2d7be5;
+  font-weight: 500;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+.expense-filters select:focus,
+.expense-filters input:focus {
+  border-color: #2d7be5;
+  box-shadow: 0 0 0 2px #e3f0ff;
+}
+.expense-filters select {
+  cursor: pointer;
+}
+.add-expense-btn {
+  background: #2d7be5;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.add-expense-btn:hover {
+  background: #1760b0;
+}
+
+/* Table */
+.expense-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 24px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.expense-table th, .expense-table td {
+  border: 1px solid #e3e3e3;
+  padding: 10px 8px;
+  text-align: center;
+  vertical-align: middle;
+}
+/* Bo tròn góc cho th và td đầu/cuối mỗi hàng */
+.expense-table th:first-child {
+  border-top-left-radius: 16px;
+}
+.expense-table th:last-child {
+  border-top-right-radius: 16px;
+}
+.expense-table tr:last-child td:first-child {
+  border-bottom-left-radius: 16px;
+}
+.expense-table tr:last-child td:last-child {
+  border-bottom-right-radius: 16px;
+}
+
+.expense-table th {
+  background: #f5f7fa;
+  color: #2d7be5;
+  font-size: 1.08rem;
+  text-align: center;
+}
+.edit-btn, .delete-btn {
+  padding: 7px 16px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  margin-right: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  transition: background 0.2s, color 0.2s;
+}
+.edit-btn {
+  background: #e3f0ff;
+  color: #2d7be5;
+  border: 1px solid #b3d3fa;
+}
+.edit-btn:hover {
+  background: #2d7be5;
+  color: #fff;
+}
+.delete-btn {
+  background: #ffeaea;
+  color: #e74c3c;
+  border: 1px solid #f5bcbc;
+}
+.delete-btn:hover {
+  background: #e74c3c;
+  color: #fff;
+}
+
+/* Category & Type badge */
+.category-badge {
+  display: inline-block;
+  background: #e3f0ff;
+  color: #2d7be5;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  border: 1px solid #b3d3fa;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+/* Màu cho từng category phổ biến */
+.category-badge.food {
+  background: #eaffea;
+  color: #27ae60;
+  border-color: #a3e6b3;
+}
+.category-badge.transport {
+  background: #e3f0ff;
+  color: #2d7be5;
+  border-color: #b3d3fa;
+}
+.category-badge.shopping {
+  background: #fff6e3;
+  color: #e7a12c;
+  border-color: #f5d67a;
+}
+.category-badge.entertainment {
+  background: #f3e3ff;
+  color: #8e44ad;
+  border-color: #d3b3fa;
+}
+.category-badge.other {
+  background: #f5f7fa;
+  color: #444;
+  border-color: #e3e3e3;
+}
+/* Badge cho Amount */
+.amount-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  border: 1px solid #e3e3e3;
+}
+.amount-badge.expense {
+  background: #ffeaea;
+  color: #e74c3c;
+  border-color: #f5bcbc;
+}
+.amount-badge.income {
+  background: #eaffea;
+  color: #27ae60;
+  border-color: #a3e6b3;
+}
+/* Có thể thêm các category khác nếu cần */
+
+.type-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  border: 1px solid #f5d67a;
+}
+.type-badge.expense {
+  background: #fff6e3;
+  color: #e7a12c;
+  border-color: #f5d67a;
+}
+.type-badge.income {
+  background: #eaffea;
+  color: #2ecc40;
+  border-color: #a3e6b3;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+.modal {
+  background: #fff;
+  padding: 32px 28px;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+  min-width: 340px;
+}
+.modal h3 {
+  margin-bottom: 18px;
+  color: #2d7be5;
+}
+.modal input, .modal select {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #d0d7de;
+  font-size: 1rem;
+}
+.save-btn {
+  background: #2d7be5;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.save-btn:hover {
+  background: #1760b0;
+}
+.cancel-btn {
+  background: #f5f7fa;
+  color: #444;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-left: 8px;
+}
+.cancel-btn:hover {
+  background: #e3e3e3;
+}
