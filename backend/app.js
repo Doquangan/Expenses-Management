@@ -1,9 +1,11 @@
-require('dotenv').config();
+require('dotenv').config({ quiet: true });
 const express = require('express');
+const cors = require('cors');
 const mongoose = require('mongoose');
 const app = express();
 
 
+app.use(cors());
 app.use(express.json());
 
 
@@ -11,19 +13,24 @@ app.use(express.json());
 const userRoutes = require('./src/routes/userRoutes');
 app.use('/api/users', userRoutes);
 
+
 // Import category routes
 const categoryRoutes = require('./src/routes/categoryRoutes');
 app.use('/api/categories', categoryRoutes);
 
+// Import expense routes
+const expenseRoutes = require('./src/routes/expenseRoutes');
+app.use('/api/expenses', expenseRoutes);
+
+// Import statistics routes
+const statisticsRoutes = require('./src/routes/statisticsRoutes');
+app.use('/api/statistics', statisticsRoutes);
+
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-// Example route
-app.get('/', (req, res) => {
-  res.send('Expense Tracker API');
-});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

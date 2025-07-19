@@ -38,3 +38,50 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: 'Lỗi server.' });
   }
 };
+
+// Lấy thông tin user hiện tại
+exports.getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId).select('-password');
+    if (!user) return res.status(404).json({ message: 'Không tìm thấy user.' });
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi server.' });
+  }
+};
+
+// Cập nhật thông tin user hiện tại
+exports.updateProfile = async (req, res) => {
+  try {
+    const { name, email } = req.body;
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ message: 'Không tìm thấy user.' });
+    if (name) user.name = name;
+    if (email) user.email = email;
+    await user.save();
+    res.json({ id: user._id, name: user.name, email: user.email });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi server.' });
+  }
+};
+
+// Đổi mật khẩu
+exports.changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword || newPassword.length < 6) {
+      return res.status(400).json({ message: 'Vui lòng nhập đủ và mật khẩu mới phải từ 6 ký tự.' });
+    }
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ message: 'Không tìm thấy user.' });
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Mật khẩu hiện tại không đúng.' });
+    }
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+    res.json({ message: 'Đổi mật khẩu thành công!' });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi server.' });
+  }
+};
