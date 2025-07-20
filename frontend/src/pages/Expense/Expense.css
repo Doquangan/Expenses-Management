@@ -89,7 +89,7 @@
   text-align: center;
 }
 .edit-btn, .delete-btn {
-  padding: 7px 16px;
+  /* padding: 7px 16px;
   border-radius: 6px;
   border: none;
   font-weight: 600;
@@ -97,7 +97,15 @@
   cursor: pointer;
   font-size: 1rem;
   box-shadow: 0 1px 4px rgba(0,0,0,0.07);
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.2s, color 0.2s; */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 1.18rem;
+  transition: background 0.18s;
+  margin: 0 2px;
 }
 .edit-btn {
   background: #e3f0ff;

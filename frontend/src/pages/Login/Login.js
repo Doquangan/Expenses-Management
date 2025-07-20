@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
+import { useNotification } from '../../components/Notification';
 
 function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { showNotification } = useNotification();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +22,7 @@ function Login() {
       const data = await res.json();
       if (res.ok) {
         localStorage.setItem('token', data.token);
-        alert('Đăng nhập thành công!');
+        showNotification('Đăng nhập thành công!', 'success');
         navigate('/dashboard');
       } else {
         setError(data.message || 'Đăng nhập thất bại');

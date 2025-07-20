@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 import Sidebar from '../../components/Sidebar';
 import './Expense.css';
+import { useNotification } from '../../components/Notification';
 
 function Expense() {
   const [showModal, setShowModal] = useState(false);
@@ -22,6 +24,7 @@ function Expense() {
   const [filterDate, setFilterDate] = useState('');
   const [filterMonth, setFilterMonth] = useState('');
   const [filterYear, setFilterYear] = useState('');
+  const { showNotification } = useNotification();
 
   // Fetch expenses on mount
   useEffect(() => {
@@ -89,32 +92,39 @@ function Expense() {
         setShowModal(false);
         setEditExpense(null);
         setForm({ description: '', amount: '', category: '', type: '', date: '' });
+        showNotification(editExpense ? 'Cập nhật thành công!' : 'Thêm thành công!', 'success');
       } else {
         setError(data.message || (editExpense ? 'Cập nhật thất bại' : 'Thêm thất bại'));
+        showNotification(data.message || (editExpense ? 'Cập nhật thất bại' : 'Thêm thất bại'), 'error');
       }
     } catch {
       setError('Lỗi kết nối server');
+      showNotification('Lỗi kết nối server', 'error');
     }
   };
 
-  // Xử lý xóa expense
-  const handleDeleteExpense = async id => {
-    if (!window.confirm('Bạn có chắc muốn xóa khoản này?')) return;
+  // Modal xác nhận xóa expense
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const handleDeleteExpense = async exp => {
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`http://localhost:3000/api/expenses/${id}`, {
+      const res = await fetch(`http://localhost:3000/api/expenses/${exp.id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
       if (res.ok) {
-        setExpenses(prev => prev.filter(exp => exp.id !== id));
+        setExpenses(prev => prev.filter(e => e.id !== exp.id));
+        showNotification('Xóa thành công!', 'success');
       } else {
         setError(data.message || 'Xóa thất bại');
+        showNotification(data.message || 'Xóa thất bại', 'error');
       }
     } catch {
       setError('Lỗi kết nối server');
+      showNotification('Lỗi kết nối server', 'error');
     }
+    setDeleteTarget(null);
   };
 
   // Mở modal edit
@@ -218,10 +228,23 @@ function Expense() {
                       <td><span className="category-badge" style={badgeStyle}>{exp.category}</span></td>
                       <td><span className={`type-badge ${exp.type}`}>{exp.type === 'expense' ? 'Expense' : 'Income'}</span></td>
                       <td>{exp.date?.slice(0,10)}</td>
-                      <td>
-                        <button className="edit-btn" onClick={() => openEditModal(exp)}>Edit</button>
-                        <button className="delete-btn" onClick={() => handleDeleteExpense(exp.id)}>Delete</button>
-                      </td>
+                  <td>
+                    <button
+                      className="icon-btn update"
+                      title="Edit"
+                      style={{marginRight:8}}
+                      onClick={() => openEditModal(exp)}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="icon-btn delete"
+                      title="Delete"
+                      onClick={() => setDeleteTarget(exp)}
+                    >
+                      <FaTrash />
+                    </button>
+                  </td>
                     </tr>
                   );
                 })}
@@ -254,6 +277,26 @@ function Expense() {
                   </div>
                   {error && <p style={{ color: 'red', marginTop: 8 }}>{error}</p>}
                 </form>
+              </div>
+            </div>
+          )}
+          {/* Modal xác nhận xóa expense */}
+          {deleteTarget && (
+            <div className="modal-overlay">
+              <div className="modal">
+                <h3 style={{color:'#e74c3c'}}>Delete Expense</h3>
+                <p>Bạn có chắc muốn xóa khoản <b>{deleteTarget.description}</b> ({deleteTarget.amount?.toLocaleString()} đ)?</p>
+                <div style={{display:'flex', gap:12, justifyContent:'center', marginTop:18}}>
+                  <button
+                    className="delete-btn"
+                    style={{background:'#e74c3c', color:'#fff', fontWeight:600}}
+                    onClick={async () => await handleDeleteExpense(deleteTarget)}
+                  >Delete</button>
+                  <button
+                    className="cancel-btn"
+                    onClick={() => setDeleteTarget(null)}
+                  >Cancel</button>
+                </div>
               </div>
             </div>
           )}

@@ -36,7 +36,7 @@ function Sidebar() {
         <h3>Expense Management</h3>
         {user && (
           <div style={{ marginBottom: 16, fontWeight: 600, color: '#1760b0' }}>
-            Xin chào, {user.name}
+            Hello, {user.name}!
           </div>
         )}
         <nav>

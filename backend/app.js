@@ -1,3 +1,4 @@
+
 require('dotenv').config({ quiet: true });
 const express = require('express');
 const cors = require('cors');
@@ -25,6 +26,10 @@ app.use('/api/expenses', expenseRoutes);
 // Import statistics routes
 const statisticsRoutes = require('./src/routes/statisticsRoutes');
 app.use('/api/statistics', statisticsRoutes);
+
+// Swagger API Docs
+const { swaggerUi, swaggerSpec } = require('./swagger');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)

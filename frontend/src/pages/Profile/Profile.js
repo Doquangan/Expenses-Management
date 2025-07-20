@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import './Profile.css';
+import { useNotification } from '../../components/Notification';
 function Profile() {
   const [user, setUser] = useState(null);
   const [editMode, setEditMode] = useState(false);
@@ -8,6 +9,7 @@ function Profile() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [message, setMessage] = useState('');
+  const { showNotification } = useNotification();
 //   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,8 +44,12 @@ function Profile() {
       setUser(data);
       setEditMode(false);
       setMessage('Cập nhật thành công!');
+      showNotification('Cập nhật thông tin thành công!', 'success');
+      window.location.reload();
+        
     } else {
       setMessage(data.message || 'Lỗi cập nhật');
+      showNotification(data.message || 'Lỗi cập nhật', 'error');
     }
   };
 
@@ -61,11 +67,11 @@ function Profile() {
     });
     const data = await res.json();
     if (res.ok) {
-      setMessage('Đổi mật khẩu thành công!');
+      showNotification('Đổi mật khẩu thành công!', 'success');
       setCurrentPassword('');
       setNewPassword('');
     } else {
-      setMessage(data.message || 'Lỗi đổi mật khẩu');
+      showNotification(data.message || 'Lỗi đổi mật khẩu', 'error');
     }
   };
 
@@ -79,7 +85,7 @@ function Profile() {
           <h2>Profile</h2>
           <div className="profile-info">
             <div className="profile-row">
-              <label htmlFor="name">Tên:</label>
+              <label htmlFor="name">Name:</label>   
               {editMode ? (
                 <input id="name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
               ) : <span className="profile-value">{user.name}</span>}
@@ -93,19 +99,19 @@ function Profile() {
           </div>
           {editMode ? (
             <form onSubmit={handleUpdate} className="btn-row">
-              <button type="submit">Lưu</button>
-              <button type="button" onClick={() => setEditMode(false)}>Hủy</button>
+              <button type="submit">Save</button>
+              <button type="button" onClick={() => setEditMode(false)}>Cancel</button>
             </form>
           ) : (
-            <button onClick={() => setEditMode(true)}>Chỉnh sửa thông tin</button>
+            <button onClick={() => setEditMode(true)}>Update your Information</button>
           )}
           <hr />
           <form onSubmit={handleChangePassword}>
-            <label htmlFor="currentPassword">Mật khẩu hiện tại:</label>
+            <label htmlFor="currentPassword">Current Password:</label>
             <input id="currentPassword" type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} />
-            <label htmlFor="newPassword">Mật khẩu mới:</label>
+            <label htmlFor="newPassword">New Password:</label>
             <input id="newPassword" type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
-            <button type="submit">Đổi mật khẩu</button>
+            <button type="submit">Change Password</button>
           </form>
           {message && <div className="error">{message}</div>}
         </div>

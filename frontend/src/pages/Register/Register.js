@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Register.css';
+import { useNotification } from '../../components/Notification';
 
 function Register() {
   const navigate = useNavigate();
@@ -9,6 +10,7 @@ function Register() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const { showNotification } = useNotification();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,7 +24,8 @@ function Register() {
       });
       const data = await res.json();
       if (res.ok) {
-        setSuccess('Đăng ký thành công!');
+        // thông báo thành công
+        showNotification('Đăng ký thành công!', 'success');
         setName(''); setEmail(''); setPassword('');
         setTimeout(() => {
           navigate('/login');

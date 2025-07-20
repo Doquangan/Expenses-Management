@@ -301,8 +301,8 @@ function Dashboard() {
 
           {/* Chi tiết từng danh mục */}
           <div className="category-details-list" style={{marginTop:32}}>
-            <h4 style={{marginBottom:12}}>Chi tiết từng danh mục</h4>
-            {pieData.labels.length === 0 && <div>Không có dữ liệu.</div>}
+            <h4 style={{marginBottom:12}}>View details by category</h4>
+            {pieData.labels.length === 0 && <div>No data found.</div>}
             {pieData.labels.map((cat, i) => (
               <div key={cat} style={{borderBottom:'1px solid #eee', padding:'8px 0'}}>
                 <button
