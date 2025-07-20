@@ -23,10 +23,6 @@ app.use('/api/categories', categoryRoutes);
 const expenseRoutes = require('./src/routes/expenseRoutes');
 app.use('/api/expenses', expenseRoutes);
 
-// Import statistics routes
-const statisticsRoutes = require('./src/routes/statisticsRoutes');
-app.use('/api/statistics', statisticsRoutes);
-
 // Swagger API Docs
 const { swaggerUi, swaggerSpec } = require('./swagger');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
