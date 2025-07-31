@@ -43,6 +43,7 @@ function Sidebar() {
           <NavLink to="/dashboard" className={({ isActive }) => isActive ? 'active' : ''}>Dashboard</NavLink>
           <NavLink to="/expenses" className={({ isActive }) => isActive ? 'active' : ''}>Manage Expense</NavLink>
           <NavLink to="/categories" className={({ isActive }) => isActive ? 'active' : ''}>Manage Category</NavLink>
+          <NavLink to="/limits" className={({ isActive }) => isActive ? 'active' : ''}>Spending Limit</NavLink>
         </nav>
       </div>
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 18 }}>

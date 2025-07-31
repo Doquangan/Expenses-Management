@@ -9,6 +9,18 @@ function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { showNotification } = useNotification();
+  
+  // Xử lý nhận token từ Google/Facebook OAuth callback
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    const provider = urlParams.get('provider');
+    if (token) {
+      localStorage.setItem('token', token);
+      showNotification(`Đăng nhập ${provider === 'facebook' ? 'Facebook' : 'Google'} thành công!`, 'success');
+      navigate('/dashboard');
+    }
+  }, [navigate, showNotification]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,6 +65,21 @@ function Login() {
         <button type="submit">Login</button>
         {error && <p style={{ color: 'red' }}>{error}</p>}
       </form>
+      <div style={{ margin: '16px 0', textAlign: 'center' }}>
+        <span>Or</span>
+        <br />
+        <a href="http://localhost:3000/api/auth/google">
+          <button type="button" style={{ marginTop: 8, background: '#4285F4', color: 'white', border: 'none', padding: '8px 16px', borderRadius: 4, cursor: 'pointer' }}>
+            Login with Google
+          </button>
+        </a>
+        <br />
+        <a href="http://localhost:3000/api/auth/facebook">
+          <button type="button" style={{ marginTop: 8, background: '#4267B2', color: 'white', border: 'none', padding: '8px 16px', borderRadius: 4, cursor: 'pointer' }}>
+            Login with Facebook
+          </button>
+        </a>
+      </div>
       <p style={{ marginTop: '16px' }}>
         Don't have an account? <Link to="/register">Register</Link>
       </p>

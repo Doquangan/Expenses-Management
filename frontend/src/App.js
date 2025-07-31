@@ -7,6 +7,7 @@ import Expense from './pages/Expense/Expense';
 import Category from './pages/Category/Category';
 import Profile from './pages/Profile/Profile';
 import { NotificationProvider } from './components/Notification';
+import Limit from './pages/Limit/Limit';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/expenses" element={<Expense />} />
           <Route path="/categories" element={<Category />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/limits" element={<Limit />} />
         </Routes>
       </Router>
     </NotificationProvider>

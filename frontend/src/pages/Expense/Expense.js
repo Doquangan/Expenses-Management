@@ -84,15 +84,38 @@ function Expense() {
       });
       const data = await res.json();
       if (res.ok) {
-        if (editExpense) {
-          setExpenses(prev => prev.map(exp => exp.id === data.id ? data : exp));
-        } else {
-          setExpenses(prev => [data, ...prev]);
-        }
-        setShowModal(false);
-        setEditExpense(null);
-        setForm({ description: '', amount: '', category: '', type: '', date: '' });
-        showNotification(editExpense ? 'Cập nhật thành công!' : 'Thêm thành công!', 'success');
+        // Nếu là thêm mới và có cảnh báo hạn mức
+        if (!editExpense && data.expense && data.warning) {
+          setExpenses(prev => [data.expense, ...prev]);
+          setShowModal(false);
+          setEditExpense(null);
+          setForm({ description: '', amount: '', category: '', type: '', date: '' });
+          showNotification('Thêm thành công!', 'success');
+          showNotification(data.warning, 'warning');
+        } else if (!editExpense && (data.expense || data.id)) {
+          // data.expense cho expense có cảnh báo, data.id cho income hoặc expense không cảnh báo
+          const newExp = data.expense || data;
+          setExpenses(prev => [newExp, ...prev]);
+          setShowModal(false);
+          setEditExpense(null);
+          setForm({ description: '', amount: '', category: '', type: '', date: '' });
+          showNotification('Thêm thành công!', 'success');
+        } else if (!editExpense && data.warning) {
+          // Trường hợp trả về warning nhưng không có expense (phòng ngừa)
+          setShowModal(false);
+          setEditExpense(null);
+          setForm({ description: '', amount: '', category: '', type: '', date: '' });
+          showNotification('Thêm thành công!', 'success');
+          showNotification(data.warning, 'warning');
+        } else if (editExpense) {
+            const updatedExp = data.expense || data;
+            setExpenses(prev => prev.map(exp => exp.id === updatedExp.id ? updatedExp : exp));
+            setShowModal(false);
+            setEditExpense(null);
+            setForm({ description: '', amount: '', category: '', type: '', date: '' });
+            showNotification('Cập nhật thành công!', 'success');
+            if (data.warning) showNotification(data.warning, 'warning');
+          }
       } else {
         setError(data.message || (editExpense ? 'Cập nhật thất bại' : 'Thêm thất bại'));
         showNotification(data.message || (editExpense ? 'Cập nhật thất bại' : 'Thêm thất bại'), 'error');

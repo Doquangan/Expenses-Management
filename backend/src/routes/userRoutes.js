@@ -131,7 +131,7 @@
  *         description: Password changed
  */
 
-
+const { body, validationResult } = require('express-validator');
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
@@ -139,8 +139,23 @@ const userController = require('../controllers/userController');
 
 const auth = require('../middlewares/auth');
 
-// Đăng ký tài khoản
-router.post('/register', userController.register);
+// Đăng ký tài khoản với validate
+router.post(
+  '/register',
+  [
+    body('name').notEmpty().withMessage('Name is required'),
+    body('email').isEmail().withMessage('Email is invalid'),
+    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
+  ],
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
+  userController.register
+);
 
 // Đăng nhập tài khoản
 router.post('/login', userController.login);
@@ -153,5 +168,8 @@ router.patch('/me', auth, userController.updateProfile);
 
 // Đổi mật khẩu
 router.post('/change-password', auth, userController.changePassword);
+
+// Đặt mật khẩu cho user chưa có mật khẩu (Google/Facebook)
+router.post('/set-password', auth, userController.setPassword);
 
 module.exports = router;

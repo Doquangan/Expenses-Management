@@ -9,6 +9,31 @@ function Profile() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [setPasswordMode, setSetPasswordMode] = useState(false);
+  const [newSetPassword, setNewSetPassword] = useState('');
+  // Đặt mật khẩu cho user social login
+  const handleSetPassword = async (e) => {
+    e.preventDefault();
+    setMessage('');
+    const token = localStorage.getItem('token');
+    const res = await fetch('http://localhost:3000/api/users/set-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ newPassword: newSetPassword })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showNotification('Đặt mật khẩu thành công! Bạn có thể đăng nhập bằng email và mật khẩu.', 'success');
+      setSetPasswordMode(false);
+      setNewSetPassword('');
+      window.location.reload();
+    } else {
+      showNotification(data.message || 'Lỗi đặt mật khẩu', 'error');
+    }
+  };
   const { showNotification } = useNotification();
 //   const navigate = useNavigate();
 
@@ -77,6 +102,7 @@ function Profile() {
 
   if (!user) return <div>Loading...</div>;
 
+  const isSocialLogin = user && (user.loginType === 'google' || user.loginType === 'facebook');
   return (
     <>
       <Sidebar />
@@ -103,16 +129,31 @@ function Profile() {
               <button type="button" onClick={() => setEditMode(false)}>Cancel</button>
             </form>
           ) : (
-            <button onClick={() => setEditMode(true)}>Update your Information</button>
+            !isSocialLogin && <button onClick={() => setEditMode(true)}>Update your Information</button>
           )}
           <hr />
-          <form onSubmit={handleChangePassword}>
-            <label htmlFor="currentPassword">Current Password:</label>
-            <input id="currentPassword" type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} />
-            <label htmlFor="newPassword">New Password:</label>
-            <input id="newPassword" type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
-            <button type="submit">Change Password</button>
-          </form>
+          {/* Đổi mật khẩu cho local user */}
+          {!isSocialLogin && (
+            <form onSubmit={handleChangePassword}>
+              <label htmlFor="currentPassword">Current Password:</label>
+              <input id="currentPassword" type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} />
+              <label htmlFor="newPassword">New Password:</label>
+              <input id="newPassword" type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+              <button type="submit">Change Password</button>
+            </form>
+          )}
+          {/* Đặt mật khẩu cho user social login nếu chưa có mật khẩu */}
+          {isSocialLogin && !setPasswordMode && (
+            <button onClick={() => setSetPasswordMode(true)} style={{marginTop: 10}}>Đặt mật khẩu để đăng nhập bằng email</button>
+          )}
+          {isSocialLogin && setPasswordMode && (
+            <form onSubmit={handleSetPassword}>
+              <label htmlFor="newSetPassword">Mật khẩu mới:</label>
+              <input id="newSetPassword" type="password" value={newSetPassword} onChange={e => setNewSetPassword(e.target.value)} />
+              <button type="submit">Xác nhận đặt mật khẩu</button>
+              <button type="button" onClick={() => {setSetPasswordMode(false); setNewSetPassword('');}}>Hủy</button>
+            </form>
+          )}
           {message && <div className="error">{message}</div>}
         </div>
       </div>

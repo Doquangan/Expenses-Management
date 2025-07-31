@@ -42,9 +42,19 @@ exports.login = async (req, res) => {
 // Lấy thông tin user hiện tại
 exports.getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).select('-password');
+    const user = await User.findById(req.user.userId);
     if (!user) return res.status(404).json({ message: 'Không tìm thấy user.' });
-    res.json(user);
+    const loginType =
+      user.password === 'GOOGLE_OAUTH' ? 'google'
+      : user.password === 'FACEBOOK_OAUTH' ? 'facebook'
+      : 'local';
+    res.json({
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
+      loginType
+    });
   } catch (err) {
     res.status(500).json({ message: 'Lỗi server.' });
   }
@@ -81,6 +91,27 @@ exports.changePassword = async (req, res) => {
     user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
     res.json({ message: 'Đổi mật khẩu thành công!' });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi server.' });
+  }
+};
+
+// Đặt mật khẩu cho user chưa có mật khẩu (đăng nhập Google/Facebook)
+exports.setPassword = async (req, res) => {
+  try {
+    const { newPassword } = req.body;
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ message: 'Mật khẩu mới phải từ 6 ký tự.' });
+    }
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ message: 'Không tìm thấy user.' });
+    // Chỉ cho phép đặt mật khẩu nếu user chưa có mật khẩu (GOOGLE_OAUTH hoặc FACEBOOK_OAUTH)
+    if (user.password !== 'GOOGLE_OAUTH' && user.password !== 'FACEBOOK_OAUTH') {
+      return res.status(400).json({ message: 'Tài khoản đã có mật khẩu, hãy dùng chức năng đổi mật khẩu.' });
+    }
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+    res.json({ message: 'Đặt mật khẩu thành công! Bạn có thể đăng nhập bằng email và mật khẩu.' });
   } catch (err) {
     res.status(500).json({ message: 'Lỗi server.' });
   }
