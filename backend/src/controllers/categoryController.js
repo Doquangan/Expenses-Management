@@ -31,7 +31,8 @@ exports.create = async (req, res) => {
     await newCat.save();
     res.status(201).json(newCat);
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi server.' });
+    console.error('Lỗi khi tạo category:', err);
+    res.status(500).json({ message: 'Lỗi server.', detail: err.message });
   }
 };
 

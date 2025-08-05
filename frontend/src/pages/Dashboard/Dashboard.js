@@ -31,14 +31,12 @@ function Dashboard() {
   // State AI suggestion
   const [aiSuggestion, setAiSuggestion] = useState('');
   const [loadingAi, setLoadingAi] = useState(false);
-  // Lấy gợi ý tiết kiệm từ AI khi vào dashboard
-  useEffect(() => {
-    fetchAiSuggestion();
-    // eslint-disable-next-line
-  }, []);
+  const [showAiPopup, setShowAiPopup] = useState(false);
+  // Không tự động lấy gợi ý khi vào dashboard nữa
 
   const fetchAiSuggestion = async () => {
     setLoadingAi(true);
+    setShowAiPopup(true);
     try {
       const token = localStorage.getItem('token');
       const res = await fetch('http://localhost:3000/api/ai/saving-suggestion', {
@@ -249,18 +247,29 @@ function Dashboard() {
       <Sidebar />
       <div style={{ marginLeft: 220 }}>
         <div className="dashboard-page">
-          {/* Gợi ý tiết kiệm từ AI */}
+          {/* Nút nhận gợi ý tiết kiệm từ AI */}
           <div style={{margin:'16px 0'}}>
-            <h3 style={{color:'#2d7be5', marginBottom:8}}>Gợi ý tiết kiệm từ AI</h3>
-            {loadingAi ? (
-              <div style={{color:'#888'}}>Đang lấy gợi ý...</div>
-            ) : (
-              <div style={{background:'#f6faff', border:'1.5px solid #2d7be5', color:'#2d7be5', borderRadius:6, padding:'10px 16px', fontWeight:500, fontSize:16, marginBottom:8}}>
-                {aiSuggestion}
-              </div>
-            )}
-            <button onClick={fetchAiSuggestion} style={{background:'#2d7be5', color:'#fff', border:'none', borderRadius:4, padding:'6px 16px', fontWeight:600, cursor:'pointer'}}>Làm mới gợi ý</button>
+            <button onClick={fetchAiSuggestion} style={{background:'#2d7be5', color:'#fff', border:'none', borderRadius:4, padding:'8px 20px', fontWeight:600, cursor:'pointer', fontSize:16}}>Nhận gợi ý tiết kiệm từ AI</button>
           </div>
+
+          {/* Popup hiển thị gợi ý */}
+          {showAiPopup && (
+            <div style={{position:'fixed', top:0, left:0, width:'100vw', height:'100vh', background:'rgba(0,0,0,0.18)', zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center'}}>
+              <div style={{background:'#fff', borderRadius:10, boxShadow:'0 2px 16px #aaa', padding:32, minWidth:340, maxWidth:480, position:'relative'}}>
+                <h3 style={{color:'#2d7be5', marginBottom:16}}>Gợi ý tiết kiệm từ AI</h3>
+                {loadingAi ? (
+                  <div style={{color:'#888'}}>Đang lấy gợi ý...</div>
+                ) : (
+                  <div style={{background:'#f6faff', border:'1.5px solid #2d7be5', color:'#2d7be5', borderRadius:6, padding:'10px 16px', fontWeight:500, fontSize:16, marginBottom:8, whiteSpace:'pre-line'}}>
+                    {aiSuggestion.split('\n').map((line, idx) => (
+                      <div key={idx} style={{marginBottom:6}}>{line}</div>
+                    ))}
+                  </div>
+                )}
+                <button onClick={()=>setShowAiPopup(false)} style={{position:'absolute', top:12, right:16, background:'#e74c3c', color:'#fff', border:'none', borderRadius:4, padding:'4px 12px', fontWeight:600, cursor:'pointer'}}>Đóng</button>
+              </div>
+            </div>
+          )}
           {/* Cảnh báo hạn mức */}
           {loadingWarnings ? (
             <div style={{margin:'16px 0', color:'#888'}}>Đang kiểm tra hạn mức...</div>

@@ -11,7 +11,8 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 exports.getSavingSuggestion = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user.userId;
+    console.log('AI suggestion for user:', userId);
     // Lấy chi tiêu tháng hiện tại
     const now = new Date();
     const month = now.getMonth() + 1;
@@ -19,11 +20,11 @@ exports.getSavingSuggestion = async (req, res) => {
     const start = new Date(year, month - 1, 1);
     const end = new Date(year, month, 1);
     const expenses = await Expense.find({
-      user: userId,
+      userId: userId,
       type: 'expense',
       date: { $gte: start, $lt: end }
     }).populate('category');
-    // console.log(`Expenses for month ${month}/${year}:`, expenses);
+    console.log('Expenses:', expenses);
     // Tổng hợp chi tiêu theo danh mục
     let summary = '';
     let total = 0;
@@ -34,16 +35,18 @@ exports.getSavingSuggestion = async (req, res) => {
       byCategory[cat] += Math.abs(exp.amount);
       total += Math.abs(exp.amount);
     });
+    console.log('byCategory:', byCategory);
     Object.keys(byCategory).forEach(cat => {
       summary += `- ${cat}: ${byCategory[cat].toLocaleString()} VNĐ\n`;
     });
     // Lấy hạn mức đúng tháng hiện tại, populate categoryId để lấy tên danh mục
     const periodValue = `${year}-${String(month).padStart(2, '0')}`;
     const limits = await Limit.find({
-      user: userId,
+      userId: userId,
       period: 'month',
       periodValue: periodValue
     }).populate('categoryId');
+    console.log('Limits:', limits);
     let limitSummary = '';
     const limitMap = {};
     limits.forEach(lim => {
@@ -51,6 +54,7 @@ exports.getSavingSuggestion = async (req, res) => {
       limitSummary += `- ${catName}: ${lim.amount.toLocaleString()} VNĐ\n`;
       limitMap[catName] = lim.amount;
     });
+    console.log('limitMap:', limitMap);
 
     let suggestions = [];
     Object.keys(byCategory).forEach(cat => {
@@ -67,9 +71,11 @@ exports.getSavingSuggestion = async (req, res) => {
     });
 
     // Gợi ý tổng thể
-    if (total > (limitMap['Tổng'] || 0)) {
+    if (typeof limitMap['Tổng'] === 'undefined') {
+      suggestions.push('Bạn chưa đặt hạn mức tổng cho tháng này. Hãy cân nhắc đặt hạn mức tổng để kiểm soát chi tiêu toàn bộ tốt hơn.');
+    } else if (total > limitMap['Tổng']) {
       suggestions.push('Tổng chi tiêu tháng này đã vượt hạn mức. Hãy xem lại các khoản chi lớn và ưu tiên tiết kiệm.');
-    } else if (total > 0.8 * (limitMap['Tổng'] || 0)) {
+    } else if (total > 0.8 * limitMap['Tổng']) {
       suggestions.push('Tổng chi tiêu tháng này đã gần chạm hạn mức. Nên kiểm soát các khoản chi tiếp theo.');
     }
 
