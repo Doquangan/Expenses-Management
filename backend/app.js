@@ -22,6 +22,10 @@ app.use('/api/categories', categoryRoutes);
 const expenseRoutes = require('./src/routes/expenseRoutes');
 app.use('/api/expenses', expenseRoutes);
 
+// Import AI routes
+const aiRoutes = require('./src/routes/aiRoutes');
+app.use('/api/ai', aiRoutes);
+
 // Swagger API Docs
 const { swaggerUi, swaggerSpec } = require('./swagger');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -63,6 +67,10 @@ app.get('/api/auth/facebook/callback', (req, res, next) => {
 // Import limit routes
 const limitRoutes = require('./src/routes/limitRoutes');
 app.use('/api/limits', limitRoutes);
+
+// Import dashboard routes
+const dashboardRoutes = require('./src/routes/dashboardRoutes');
+app.use('/api/dashboard', dashboardRoutes);
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)

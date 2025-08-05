@@ -48,15 +48,6 @@ passport.use(new FacebookStrategy({
   }
 }));
 
-// Serialize/deserialize user
-// passport.serializeUser((user, done) => {
-//   done(null, user.id);
-// });
-// passport.deserializeUser(async (id, done) => {
-//   const user = await User.findById(id);
-//   done(null, user);
-// });
-
 const jwt = require('jsonwebtoken'); 
 module.exports = passport;
 

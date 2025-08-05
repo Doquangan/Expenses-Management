@@ -24,7 +24,62 @@ function Dashboard() {
   const [filterValue, setFilterValue] = useState('');
   const [expenses, setExpenses] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  // State cảnh báo hạn mức
+  const [limitWarnings, setLimitWarnings] = useState([]);
+  const [loadingWarnings, setLoadingWarnings] = useState(false);
 
+  // State AI suggestion
+  const [aiSuggestion, setAiSuggestion] = useState('');
+  const [loadingAi, setLoadingAi] = useState(false);
+  // Lấy gợi ý tiết kiệm từ AI khi vào dashboard
+  useEffect(() => {
+    fetchAiSuggestion();
+    // eslint-disable-next-line
+  }, []);
+
+  const fetchAiSuggestion = async () => {
+    setLoadingAi(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:3000/api/ai/saving-suggestion', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      setAiSuggestion(data.suggestion || 'Không có gợi ý.');
+    } catch {
+      setAiSuggestion('Không thể lấy gợi ý từ AI.');
+    }
+    setLoadingAi(false);
+  };
+  // Lấy cảnh báo hạn mức khi vào dashboard hoặc khi filter tháng thay đổi
+  useEffect(() => {
+    const fetchWarnings = async () => {
+      setLoadingWarnings(true);
+      try {
+        const token = localStorage.getItem('token');
+        // Lấy periodValue theo filter tháng hiện tại
+        let periodValue = '';
+        if (filterType === 'month' && filterValue) periodValue = filterValue;
+        else {
+          const now = new Date();
+          periodValue = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        }
+        const res = await fetch(`http://localhost:3000/api/dashboard/limit-warnings?period=month&periodValue=${periodValue}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setLimitWarnings(data);
+        } else {
+          setLimitWarnings([]);
+        }
+      } catch {
+        setLimitWarnings([]);
+      }
+      setLoadingWarnings(false);
+    };
+    fetchWarnings();
+  }, [filterType, filterValue]);
 
   // Lấy dữ liệu expense
   useEffect(() => {
@@ -194,6 +249,45 @@ function Dashboard() {
       <Sidebar />
       <div style={{ marginLeft: 220 }}>
         <div className="dashboard-page">
+          {/* Gợi ý tiết kiệm từ AI */}
+          <div style={{margin:'16px 0'}}>
+            <h3 style={{color:'#2d7be5', marginBottom:8}}>Gợi ý tiết kiệm từ AI</h3>
+            {loadingAi ? (
+              <div style={{color:'#888'}}>Đang lấy gợi ý...</div>
+            ) : (
+              <div style={{background:'#f6faff', border:'1.5px solid #2d7be5', color:'#2d7be5', borderRadius:6, padding:'10px 16px', fontWeight:500, fontSize:16, marginBottom:8}}>
+                {aiSuggestion}
+              </div>
+            )}
+            <button onClick={fetchAiSuggestion} style={{background:'#2d7be5', color:'#fff', border:'none', borderRadius:4, padding:'6px 16px', fontWeight:600, cursor:'pointer'}}>Làm mới gợi ý</button>
+          </div>
+          {/* Cảnh báo hạn mức */}
+          {loadingWarnings ? (
+            <div style={{margin:'16px 0', color:'#888'}}>Đang kiểm tra hạn mức...</div>
+          ) : limitWarnings.length > 0 && (
+            <div style={{margin:'16px 0'}}>
+              <h3 style={{color:'#e67e22', marginBottom:8}}>Cảnh báo hạn mức chi tiêu</h3>
+              {limitWarnings.map(warn => (
+                <div key={warn.limitId} style={{
+                  background: warn.type === 'over' ? '#ffeaea' : '#fffbe6',
+                  border: `1.5px solid ${warn.type === 'over' ? '#e74c3c' : '#e7a12c'}`,
+                  color: warn.type === 'over' ? '#e74c3c' : '#e7a12c',
+                  borderRadius: 6, padding: '10px 16px', marginBottom: 8, fontWeight: 500, fontSize: 16
+                }}>
+                  <span style={{fontWeight:600}}>
+                    {warn.categoryName ? warn.categoryName : 'Tổng tất cả'}:
+                  </span>
+                  &nbsp;Đã chi {warn.total.toLocaleString()} / {warn.amount.toLocaleString()} VNĐ
+                  &nbsp;({warn.percent}%)
+                  <span style={{marginLeft:8, fontWeight:600}}>
+                    {warn.type === 'over'
+                      ? 'ĐÃ VƯỢT HẠN MỨC!'
+                      : 'Đã chi trên 80% hạn mức!'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
           <div className="dashboard-header-row">
             <h2>Dashboard</h2>
             <div className="dashboard-summary">
@@ -270,8 +364,15 @@ function Dashboard() {
               <option value="income">Income</option>
             </select>
           </div>
-          <div className="dashboard-charts">
-            <div className="chart-box">
+          <div className="dashboard-charts" style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: 32,
+            marginBottom: 24,
+            alignItems: 'flex-start',
+            width: '100%'
+          }}>
+            <div className="chart-box" style={{ width: '100%', height: 420, minWidth: 350, minHeight: 320, background: '#fff', borderRadius: 10, boxShadow: '0 2px 8px #eee', padding: 16 }}>
               <h4>Pie Chart by Category ({chartType === 'expense' ? 'Expense' : 'Income'})</h4>
               <Pie data={pieData} options={{
                 onClick: (evt, elems) => onPieClick(elems),
@@ -291,11 +392,11 @@ function Dashboard() {
                     }
                   }
                 }
-              }} />
+              }} style={{ width: '100%', height: 360 }} />
             </div>
-            <div className="chart-box">
+            <div className="chart-box" style={{ width: '100%', height: 420, minWidth: 350, minHeight: 320, background: '#fff', borderRadius: 10, boxShadow: '0 2px 8px #eee', padding: 16 }}>
               <h4>Bar Chart ({chartType === 'expense' ? 'Expense' : 'Income'})</h4>
-              <Bar data={barDataFiltered} />
+              <Bar data={barDataFiltered} style={{ width: '100%', height: 360 }} />
             </div>
           </div>
 
