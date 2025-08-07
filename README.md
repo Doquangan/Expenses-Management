@@ -1,68 +1,70 @@
-# Hệ thống Quản Lý Chi Tiêu Cá Nhân
 
-## Giới thiệu
-Đây là dự án quản lý chi tiêu cá nhân, giúp người dùng kiểm soát các khoản chi, đặt hạn mức, nhận cảnh báo và gợi ý tiết kiệm thông minh. Hệ thống gồm backend (Node.js/Express/MongoDB) và frontend (React).
+# Personal Expense Management System
 
-## Tính năng chính
-- Đăng ký, đăng nhập, xác thực JWT
-- Quản lý danh mục chi tiêu, khoản chi, hạn mức
-- Đặt hạn mức chi tiêu từng danh mục và tổng tháng
-- Cảnh báo khi gần/vượt hạn mức
-- Gợi ý tiết kiệm thông minh (AI rule-based)
-- Dashboard trực quan, sử dụng biểu đồ tròn và cột
-- Giao diện hiện đại, dễ sử dụng
+## Introduction
+This is a personal expense management project. It helps users control their spending, set limits, receive warnings, and get smart saving suggestions. The system includes a backend (Node.js/Express/MongoDB) and a frontend (React).
 
-## Cấu trúc dự án
+## Main Features
+- Register, login, JWT authentication
+- Manage expense categories, expenses, and limits
+- Set spending limits for each category and for the whole month
+- Warning when spending is close to or over the limit
+- Smart saving suggestions (rule-based AI)
+- Dashboard with pie and bar charts
+- Modern and easy-to-use interface
+
+## Project Structure
 ```
 backend/
   src/
-    controllers/    // Xử lý logic API
-    models/         // Định nghĩa dữ liệu MongoDB
-    routes/         // Định tuyến API
-    middlewares/    // Xác thực, bảo vệ API
-    config/         // Kết nối DB
+    controllers/    // API logic
+    models/         // MongoDB data models
+    routes/         // API routes
+    middlewares/    // Authentication, API protection
+    config/         // Database connection
 frontend/
   src/
-    pages/          // Các trang chính: Dashboard, Category, Expense, Limit, Login, Register, Profile
+    pages/          // Main pages: Dashboard, Category, Expense, Limit, Login, Register, Profile
     components/     // Sidebar, Notification, ...
 ```
 
-## Hướng dẫn cài đặt
+## Installation Guide
 ### Backend
-1. Di chuyển vào thư mục `backend`
-2. Cài đặt package:
+1. Go to the `backend` folder
+2. Install packages:
    ```bash
    npm install
    ```
-3. Tạo file `.env` và cấu hình biến môi trường (ví dụ kết nối MongoDB, JWT_SECRET, ...)
-4. Khởi động server:
+3. Create a `.env` file and set environment variables (for example: MongoDB connection, JWT_SECRET, ...)
+4. Start the server:
    ```bash
    npm start
    ```
 
 ### Frontend
-1. Di chuyển vào thư mục `frontend`
-2. Cài đặt package:
+1. Go to the `frontend` folder
+2. Install packages:
    ```bash
    npm install
    ```
-3. Khởi động ứng dụng React:
+3. Start the React app:
    ```bash
    npm start
    ```
 
-## API tiêu biểu
-- `/api/expenses` CRUD khoản chi
-- `/api/categories` CRUD danh mục
-- `/api/limits` Đặt/lấy hạn mức
-- `/api/dashboard/limit-warnings` Cảnh báo hạn mức
-- `/api/ai/saving-suggestion` Gợi ý tiết kiệm
+## Main APIs
+- `/api/expenses` CRUD expenses
+- `/api/categories` CRUD categories
+- `/api/limits` Set/get limits
+- `/api/dashboard/limit-warnings` Limit warnings
+- `/api/ai/saving-suggestion` Saving suggestions
 
-## Đóng góp
-Mọi đóng góp, báo lỗi hoặc ý tưởng mới đều được hoan nghênh qua Issues hoặc Pull Request trên Github.
+## API Documentation
+After starting the backend server, you can access the Swagger API documentation at:
+`http://localhost:3000/api-docs`
 
-## Tác giả
+## Contribution
+All contributions, bug reports, or new ideas are welcome via Issues or Pull Requests on Github.
+
+## Author
 - Doquangan
-
-## License
-MIT
