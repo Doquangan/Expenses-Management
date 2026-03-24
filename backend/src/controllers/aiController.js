@@ -4,6 +4,7 @@ const Expense = require('../models/Expense');
 const Limit = require('../models/Limit');
 const Category = require('../models/Category');
 const User = require('../models/User');
+const Conversation = require('../models/Conversation');
 
 // Helper to get genAI instance lazily
 const getAI = () => new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -87,7 +88,7 @@ Lưu ý: Nếu chi tiêu vượt quá hạn mức, hãy cảnh báo ngay. Dùng 
 exports.handleChat = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const { messages } = req.body; // Array defined as { role, content }
+    const { messages, conversationId } = req.body;
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return res.status(400).json({ error: 'messages is required and must be a non-empty array.' });
@@ -194,7 +195,37 @@ Quy tắc: Tiếng Việt, thân thiện, dựa trên dữ liệu thực tế �
     const result = await chat.sendMessage({ message: lastUserMessage });
     const reply = result.text;
 
-    res.json({ reply });
+    // --- Lưu lịch sử vào DB ---
+    let conversation;
+    const userMsg = { role: 'user', content: lastUserMessage };
+    const assistantMsg = { role: 'assistant', content: reply };
+
+    if (conversationId) {
+      // Append vào conversation đã có
+      conversation = await Conversation.findOneAndUpdate(
+        { _id: conversationId, userId },
+        { $push: { messages: { $each: [userMsg, assistantMsg] } } },
+        { new: true }
+      );
+    }
+
+    if (!conversation) {
+      // Tạo conversation mới
+      const title = lastUserMessage.length > 50
+        ? lastUserMessage.substring(0, 50) + '...'
+        : lastUserMessage;
+
+      conversation = await Conversation.create({
+        userId,
+        title,
+        messages: [...messages.slice(0, -1).map(m => ({
+          role: m.role,
+          content: m.content,
+        })), userMsg, assistantMsg],
+      });
+    }
+
+    res.json({ reply, conversationId: conversation._id });
 
   } catch (err) {
     console.error('Gemini Chat error:', err);

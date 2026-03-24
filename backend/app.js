@@ -26,6 +26,10 @@ app.use('/api/expenses', expenseRoutes);
 const aiRoutes = require('./src/routes/aiRoutes');
 app.use('/api/ai', aiRoutes);
 
+// Import conversation routes
+const conversationRoutes = require('./src/routes/conversationRoutes');
+app.use('/api/conversations', conversationRoutes);
+
 // Swagger API Docs
 const { swaggerUi, swaggerSpec } = require('./swagger');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
