@@ -1,13 +1,14 @@
 // AI Controller: Gợi ý tiết kiệm và Chatbot dùng Google Gemini
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { GoogleGenAI } = require("@google/genai");
 const Expense = require('../models/Expense');
 const Limit = require('../models/Limit');
 const Category = require('../models/Category');
 const User = require('../models/User');
 
 // Helper to get genAI instance lazily
-const getGenAI = () => new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const getAI = () => new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
+const MODEL_NAME = "gemini-2.5-flash";
 
 // ========== GỢI Ý TIẾT KIỆM (Tự động) ==========
 exports.getSavingSuggestion = async (req, res) => {
@@ -68,11 +69,12 @@ ${limitSummary || '(Chưa đặt hạn mức)'}
 
 Lưu ý: Nếu chi tiêu vượt quá hạn mức, hãy cảnh báo ngay. Dùng emoji phù hợp.`;
 
-    const genAI = getGenAI();
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-    const result = await model.generateContent(helpPrompt);
-    const response = await result.response;
-    const suggestions = response.text();
+    const ai = getAI();
+    const response = await ai.models.generateContent({
+      model: MODEL_NAME,
+      contents: helpPrompt,
+    });
+    const suggestions = response.text;
 
     res.json({ suggestion: suggestions });
   } catch (err) {
@@ -171,13 +173,6 @@ ${recentTransactions.slice(0, 15).map(t => `  - [${t.date}] ${t.category}: ${Mat
 
 Quy tắc: Tiếng Việt, thân thiện, dựa trên dữ liệu thực tế ở trên để trả lời, format đẹp dùng emoji.`;
 
-    // --- Khởi tạo Model với System Instruction ---
-    const genAI = getGenAI();
-    const chatModel = genAI.getGenerativeModel({ 
-      model: "gemini-2.0-flash",
-      systemInstruction: systemInstruction
-    });
-
     // --- Chuyển lịch sử chat sang định dạng của Gemini (user/model) ---
     const history = messages.slice(0, -1).map(m => ({
       role: m.role === 'assistant' ? 'model' : 'user',
@@ -186,13 +181,18 @@ Quy tắc: Tiếng Việt, thân thiện, dựa trên dữ liệu thực tế �
 
     const lastUserMessage = messages[messages.length - 1].content;
 
-    // --- Gọi Gemini API ---
-    const chat = chatModel.startChat({
+    // --- Gọi Gemini API (New SDK) ---
+    const ai = getAI();
+    const chat = ai.chats.create({
+      model: MODEL_NAME,
       history: history,
+      config: {
+        systemInstruction: systemInstruction,
+      },
     });
 
-    const result = await chat.sendMessage(lastUserMessage);
-    const reply = result.response.text();
+    const result = await chat.sendMessage({ message: lastUserMessage });
+    const reply = result.text;
 
     res.json({ reply });
 
