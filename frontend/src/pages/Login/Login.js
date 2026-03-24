@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
 import { useNotification } from '../../components/Notification';
+import { GoogleIcon, FacebookIcon } from '../../components/Icons';
 
 function Login() {
   const navigate = useNavigate();
@@ -9,8 +10,7 @@ function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { showNotification } = useNotification();
-  
-  // Xử lý nhận token từ Google/Facebook OAuth callback
+
   React.useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
@@ -46,43 +46,46 @@ function Login() {
 
   return (
     <div className="login-page">
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Login</button>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-      </form>
-      <div style={{ margin: '16px 0', textAlign: 'center' }}>
-        <span>Or</span>
-        <br />
-        <a href="http://localhost:3000/api/auth/google">
-          <button type="button" style={{ marginTop: 8, background: '#4285F4', color: 'white', border: 'none', padding: '8px 16px', borderRadius: 4, cursor: 'pointer' }}>
-            Login with Google
-          </button>
-        </a>
-        <br />
-        <a href="http://localhost:3000/api/auth/facebook">
-          <button type="button" style={{ marginTop: 8, background: '#4267B2', color: 'white', border: 'none', padding: '8px 16px', borderRadius: 4, cursor: 'pointer' }}>
-            Login with Facebook
-          </button>
-        </a>
+      <div className="login-card">
+        <h2>Welcome back</h2>
+        <p className="login-subtitle">Sign in to manage your expenses</p>
+
+        <form onSubmit={handleSubmit} className="login-form">
+          <input
+            className="form-input"
+            type="email"
+            placeholder="Email address"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+          />
+          <input
+            className="form-input"
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit" className="btn btn-primary">Sign in</button>
+          {error && <p className="login-error">{error}</p>}
+        </form>
+
+        <div className="login-divider">or continue with</div>
+
+        <div className="social-buttons">
+          <a href="http://localhost:3000/api/auth/google" className="btn-social">
+            <GoogleIcon size={18} /> Continue with Google
+          </a>
+          <a href="http://localhost:3000/api/auth/facebook" className="btn-social">
+            <FacebookIcon size={18} /> Continue with Facebook
+          </a>
+        </div>
+
+        <p className="login-footer">
+          Don't have an account? <Link to="/register">Sign up</Link>
+        </p>
       </div>
-      <p style={{ marginTop: '16px' }}>
-        Don't have an account? <Link to="/register">Register</Link>
-      </p>
     </div>
   );
 }

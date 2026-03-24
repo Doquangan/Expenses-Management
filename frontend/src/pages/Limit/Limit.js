@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Sidebar from '../../components/Sidebar';
+import Layout from '../../components/Layout';
 import { useNotification } from '../../components/Notification';
 import './Limit.css';
 
@@ -10,16 +10,12 @@ function Limit() {
   const { showNotification } = useNotification();
 
   useEffect(() => {
-    // Lấy danh sách category
     const fetchCategories = async () => {
       const token = localStorage.getItem('token');
       const res = await fetch('http://localhost:3000/api/categories', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      if (res.ok) {
-        const data = await res.json();
-        setCategories(data);
-      }
+      if (res.ok) setCategories(await res.json());
     };
     fetchCategories();
     fetchLimits();
@@ -32,10 +28,7 @@ function Limit() {
     const res = await fetch(`http://localhost:3000/api/limits?period=month&periodValue=${periodValue}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    if (res.ok) {
-      const data = await res.json();
-      setLimits(data);
-    }
+    if (res.ok) setLimits(await res.json());
   };
 
   const handleSubmit = async (e) => {
@@ -52,10 +45,7 @@ function Limit() {
     }
     const res = await fetch('http://localhost:3000/api/limits', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify(body)
     });
     const data = await res.json();
@@ -69,58 +59,59 @@ function Limit() {
   };
 
   return (
-    <>
-      <Sidebar />
-      <div style={{ marginLeft: 220 }}>
-        <div className="limit-container">
-          <h2>Đặt hạn mức chi tiêu</h2>
+    <Layout>
+      <div className="limit-page">
+        <h2 className="page-title">Spending Limits</h2>
+
+        <div className="card limit-form-card">
+          <h3 className="section-title">Set a new limit</h3>
           <form onSubmit={handleSubmit} className="limit-form">
-            <div className="limit-row">
-              <label>Loại chi tiêu:</label>
-              <select value={form.categoryId} onChange={e => setForm({ ...form, categoryId: e.target.value })}>
-                <option value="">Tổng tất cả</option>
-                {categories.map(cat => (
-                  <option key={cat._id} value={cat._id}>{cat.name}</option>
-                ))}
+            <div className="form-group">
+              <label>Category</label>
+              <select className="form-select" value={form.categoryId} onChange={e => setForm({ ...form, categoryId: e.target.value })}>
+                <option value="">All Categories</option>
+                {categories.map(cat => <option key={cat._id} value={cat._id}>{cat.name}</option>)}
               </select>
             </div>
-            <div className="limit-row">
-              <label>Hạn mức (VNĐ):</label>
-              <input type="number" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} min="0" />
+            <div className="form-group">
+              <label>Limit (VNĐ)</label>
+              <input className="form-input" type="number" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} min="0" placeholder="e.g. 5,000,000" />
             </div>
-            <div className="limit-row">
-              <label>Kỳ hạn:</label>
-              <select value={form.period} onChange={e => setForm({ ...form, period: e.target.value })}>
-                <option value="month">Tháng</option>
-                <option value="week">Tuần</option>
-              </select>
-            </div>
-            <div className="limit-row">
-              <label>Giá trị kỳ hạn:</label>
-              <input
-                type="text"
-                placeholder={form.period === 'month' ? 'YYYY-MM' : 'YYYY-WW'}
-                value={form.periodValue}
-                onChange={e => setForm({ ...form, periodValue: e.target.value })}
-              />
-            </div>
-            <button type="submit">Đặt hạn mức</button>
-          </form>
-          <hr />
-          <h3>Hạn mức đã đặt tháng này</h3>
-          <div className="limit-list">
-            {limits.length === 0 && <div>Chưa có hạn mức nào.</div>}
-            {limits.map(lim => (
-              <div className="limit-item" key={lim._id}>
-                <span>{lim.categoryId ? (categories.find(c => c._id === lim.categoryId)?.name || '---') : 'Tổng tất cả'}</span>
-                <span>{lim.amount.toLocaleString()} VNĐ</span>
-                <span>{lim.period === 'month' ? 'Tháng' : 'Tuần'} {lim.periodValue}</span>
+            <div className="form-row">
+              <div className="form-group">
+                <label>Period</label>
+                <select className="form-select" value={form.period} onChange={e => setForm({ ...form, period: e.target.value })}>
+                  <option value="month">Monthly</option>
+                  <option value="week">Weekly</option>
+                </select>
               </div>
-            ))}
-          </div>
+              <div className="form-group">
+                <label>Period Value</label>
+                <input className="form-input" type="text" placeholder={form.period === 'month' ? 'YYYY-MM' : 'YYYY-WW'} value={form.periodValue} onChange={e => setForm({ ...form, periodValue: e.target.value })} />
+              </div>
+            </div>
+            <button type="submit" className="btn btn-primary">Set Limit</button>
+          </form>
+        </div>
+
+        <div className="card">
+          <h3 className="section-title">Current month limits</h3>
+          {limits.length === 0 ? (
+            <div className="empty-state">No limits set yet.</div>
+          ) : (
+            <div className="limits-list">
+              {limits.map(lim => (
+                <div className="limit-item" key={lim._id}>
+                  <div className="limit-item-name">{lim.categoryId ? (categories.find(c => c._id === lim.categoryId)?.name || '---') : 'All Categories'}</div>
+                  <div className="limit-item-amount">{lim.amount.toLocaleString()} VNĐ</div>
+                  <div className="limit-item-period">{lim.period === 'month' ? 'Monthly' : 'Weekly'} · {lim.periodValue}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
-    </>
+    </Layout>
   );
 }
 

@@ -6,7 +6,7 @@ const User = require('./src/models/User');
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: '/api/auth/google/callback'
+  callbackURL: process.env.GOOGLE_CALLBACK_URL || '/api/auth/google/callback'
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     // Tìm user theo googleId hoặc email
@@ -28,7 +28,7 @@ passport.use(new GoogleStrategy({
 passport.use(new FacebookStrategy({
   clientID: process.env.FACEBOOK_CLIENT_ID,
   clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-  callbackURL: '/api/auth/facebook/callback',
+  callbackURL: process.env.FACEBOOK_CALLBACK_URL || '/api/auth/facebook/callback',
   profileFields: ['id', 'displayName', 'emails', 'photos']
 }, async (accessToken, refreshToken, profile, done) => {
   try {

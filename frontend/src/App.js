@@ -8,6 +8,7 @@ import Category from './pages/Category/Category';
 import Profile from './pages/Profile/Profile';
 import { NotificationProvider } from './components/Notification';
 import Limit from './pages/Limit/Limit';
+import ChatbotPage from './pages/Chatbot/ChatbotPage';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/categories" element={<Category />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/limits" element={<Limit />} />
+          <Route path="/chat" element={<ChatbotPage />} />
         </Routes>
       </Router>
     </NotificationProvider>

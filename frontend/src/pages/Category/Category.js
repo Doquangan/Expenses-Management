@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Sidebar from '../../components/Sidebar';
+import Layout from '../../components/Layout';
+import Modal from '../../components/Modal';
 import './Category.css';
 import { useNotification } from '../../components/Notification';
 import { FaEdit, FaTrash } from 'react-icons/fa';
@@ -35,10 +36,7 @@ function Category() {
     const token = localStorage.getItem('token');
     const res = await fetch('http://localhost:3000/api/categories', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ name: newName.trim(), description: newDesc })
     });
     const data = await res.json();
@@ -46,7 +44,6 @@ function Category() {
     if (!res.ok) {
       setError(data.message || 'Error');
       showNotification(data.message || 'Error', 'error');
-      return;
     } else {
       setCategories([...categories, data]);
       setNewName('');
@@ -54,20 +51,18 @@ function Category() {
       showNotification('Thêm danh mục thành công!', 'success');
     }
   };
+
   const handleUpdate = (cat) => {
     setUpdateTarget(cat);
     setUpdateName(cat.name);
     setUpdateDesc(cat.description || '');
-  }
+  };
 
   const updateCategory = async (id, name, description) => {
     const token = localStorage.getItem('token');
     const res = await fetch(`http://localhost:3000/api/categories/${id}`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ name, description })
     });
     const data = await res.json();
@@ -95,145 +90,77 @@ function Category() {
   };
 
   return (
-    <>
-      <Sidebar />
-      <div style={{ marginLeft: 220 }}>
-        <div className="category-page">
-          <h2>Manage Category</h2>
-          <p>Manage your expense categories here.</p>
-          <form onSubmit={handleCreate} style={{margin:'18px 0', display:'flex', gap:12, alignItems:'center'}}>
-            <input
-              type="text"
-              placeholder="Category name"
-              value={newName}
-              onChange={e => setNewName(e.target.value)}
-              required
-              style={{padding:'8px 14px', borderRadius:8, border:'1.5px solid #b3d3fa', fontSize:'1rem'}}
-            />
-            <input
-              type="text"
-              placeholder="Description (optional)"
-              value={newDesc}
-              onChange={e => setNewDesc(e.target.value)}
-              style={{padding:'8px 14px', borderRadius:8, border:'1.5px solid #b3d3fa', fontSize:'1rem'}}
-            />
-            <button type="submit" disabled={loading} style={{padding:'8px 18px', borderRadius:8, background:'#2d7be5', color:'#fff', fontWeight:600, border:'none', cursor:'pointer'}}>
-              {loading ? 'Adding...' : 'Add Category'}
-            </button>
-          </form>
-          {error && <div style={{color:'#e74c3c', marginBottom:8}}>{error}</div>}
-          <div style={{marginTop:18}}>
-            <h4>Default & Your Categories</h4>
-            <table style={{width:'100%', borderCollapse:'collapse', marginTop:12}}>
-              <thead>
-                <tr style={{background:'#f6f8fa'}}>
-                  <th style={{padding:'8px', border:'1px solid #e0eafc'}}>Name</th>
-                  <th style={{padding:'8px', border:'1px solid #e0eafc'}}>Description</th>
-                  <th style={{padding:'8px', border:'1px solid #e0eafc'}}>Type</th>
-                  <th style={{padding:'8px', border:'1px solid #e0eafc'}}>Action</th>
+    <Layout>
+      <div className="category-page">
+        <h2 className="page-title">Manage Categories</h2>
+        <p className="page-subtitle">Add and organize your expense categories.</p>
+
+        <form onSubmit={handleCreate} className="category-form">
+          <input className="form-input" type="text" placeholder="Category name" value={newName} onChange={e => setNewName(e.target.value)} required />
+          <input className="form-input" type="text" placeholder="Description (optional)" value={newDesc} onChange={e => setNewDesc(e.target.value)} />
+          <button type="submit" className="btn btn-primary" disabled={loading}>
+            {loading ? 'Adding...' : 'Add Category'}
+          </button>
+        </form>
+        {error && <div className="error-message">{error}</div>}
+
+        <div className="card table-card">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {categories.map(cat => (
+                <tr key={cat._id || cat.id}>
+                  <td><strong className="cat-name">{cat.name}</strong></td>
+                  <td className="text-muted">{cat.description}</td>
+                  <td>
+                    {cat.user
+                      ? <span className="badge badge-income">Custom</span>
+                      : <span className="badge badge-category">Default</span>}
+                  </td>
+                  <td>
+                    {cat.user && (
+                      <>
+                        <button className="btn-icon" title="Edit" onClick={() => handleUpdate(cat)}><FaEdit /></button>
+                        <button className="btn-icon danger" title="Delete" onClick={() => setDeleteTarget(cat)}><FaTrash /></button>
+                      </>
+                    )}
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {categories.map(cat => (
-                  <tr key={cat._id || cat.id}>
-                    <td style={{padding:'8px', border:'1px solid #e0eafc', fontWeight:600, color:'#1760b0'}}>{cat.name}</td>
-                    <td style={{padding:'8px', border:'1px solid #e0eafc', color:'#888'}}>{cat.description}</td>
-                    <td style={{padding:'8px', border:'1px solid #e0eafc'}}>
-                      {cat.user
-                        ? <span style={{color:'#27ae60'}}>Your category</span>
-                        : <span style={{color:'#555'}}>Default</span>
-                      }
-                    </td>
-                    <td style={{padding:'8px', border:'1px solid #e0eafc'}}>
-                      {cat.user && (
-                        <>
-                          <button
-                            className="icon-btn update"
-                            title="Update"
-                            onClick={() => handleUpdate(cat)}
-                          >
-                            <FaEdit />
-                          </button>
-                          <button
-                            className="icon-btn delete"
-                            title="Delete"
-                            onClick={() => setDeleteTarget(cat)}
-                          >
-                            <FaTrash />
-                          </button>
-                        </>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
-      {/* Modal xác nhận xóa category */}
+
       {deleteTarget && (
-        <div className="modal-overlay">
-          <div className="modal-box">
-            <h4>Are you sure you want to delete <span style={{color:'#e74c3c'}}>{deleteTarget.name}</span>?</h4>
-            <div style={{marginTop:18, display:'flex', gap:12, justifyContent:'center'}}>
-              <button
-                className="icon-btn delete"
-                onClick={async () => {
-                  await handleDelete(deleteTarget);
-                  setDeleteTarget(null);
-                }}
-              >Yes</button>
-              <button
-                className="icon-btn"
-                style={{background:'#e0eafc'}}
-                onClick={() => setDeleteTarget(null)}
-              >Cancel</button>
-            </div>
+        <Modal title="Delete Category" onClose={() => setDeleteTarget(null)}>
+          <p>Are you sure you want to delete <strong style={{color: 'var(--accent-red)'}}>{deleteTarget.name}</strong>?</p>
+          <div className="modal-actions">
+            <button className="btn btn-ghost" onClick={() => setDeleteTarget(null)}>Cancel</button>
+            <button className="btn btn-danger" onClick={async () => { await handleDelete(deleteTarget); setDeleteTarget(null); }}>Delete</button>
           </div>
-        </div>
+        </Modal>
       )}
-      {/* Modal cập nhật category */}
+
       {updateTarget && (
-        <div className="modal-overlay">
-          <div className="modal-box">
-            <h4>Update category <span style={{color:'#2d7be5'}}>{updateTarget.name}</span></h4>
-            <div style={{marginTop:18, display:'flex', flexDirection:'column', gap:14, alignItems:'center'}}>
-              <input
-                type="text"
-                value={updateName}
-                onChange={e => setUpdateName(e.target.value)}
-                placeholder="Category name"
-                style={{padding:'8px 14px', borderRadius:8, border:'1.5px solid #b3d3fa', fontSize:'1rem', width:'90%'}}
-              />
-              <input
-                type="text"
-                value={updateDesc}
-                onChange={e => setUpdateDesc(e.target.value)}
-                placeholder="Description (optional)"
-                style={{padding:'8px 14px', borderRadius:8, border:'1.5px solid #b3d3fa', fontSize:'1rem', width:'90%'}}
-              />
-              <div style={{display:'flex', gap:12, justifyContent:'center', marginTop:8}}>
-                <button
-                  className="icon-btn update"
-                  style={{background:'#2d7be5', color:'#fff', border:'1px solid #2d7be5', fontWeight:600}}
-                  onClick={async () => {
-                    if (!updateName.trim()) return;
-                    await updateCategory(updateTarget._id || updateTarget.id, updateName.trim(), updateDesc);
-                    setUpdateTarget(null);
-                  }}
-                >Save</button>
-                <button
-                  className="icon-btn"
-                  style={{background:'#e0eafc'}}
-                  onClick={() => setUpdateTarget(null)}
-                >Cancel</button>
-              </div>
-            </div>
+        <Modal title={`Update: ${updateTarget.name}`} onClose={() => setUpdateTarget(null)}>
+          <div className="form-group"><label>Name</label><input className="form-input" type="text" value={updateName} onChange={e => setUpdateName(e.target.value)} /></div>
+          <div className="form-group"><label>Description</label><input className="form-input" type="text" value={updateDesc} onChange={e => setUpdateDesc(e.target.value)} placeholder="Optional" /></div>
+          <div className="modal-actions">
+            <button className="btn btn-ghost" onClick={() => setUpdateTarget(null)}>Cancel</button>
+            <button className="btn btn-primary" onClick={async () => { if (!updateName.trim()) return; await updateCategory(updateTarget._id || updateTarget.id, updateName.trim(), updateDesc); setUpdateTarget(null); }}>Save</button>
           </div>
-        </div>
+        </Modal>
       )}
-    </>
+    </Layout>
   );
 }
+
 export default Category;

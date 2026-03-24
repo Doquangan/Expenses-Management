@@ -29,19 +29,17 @@ frontend/
 ```
 
 ## Installation Guide
-### Backend
-1. Go to the `backend` folder
-2. Install packages:
+### Backend (using Docker)
+The backend and the MongoDB database are containerized for easy setup.
+1. Make sure you have **Docker** and **Docker Compose** installed.
+2. In the `backend` folder, create a `.env` file and set the required environment variables (e.g. `JWT_SECRET`, `GOOGLE_CLIENT_ID`, etc.). Note that MongoDB connection is automatically overridden in Docker to point to the local container.
+3. In the root directory of the project, run:
    ```bash
-   npm install
+   docker-compose up -d --build
    ```
-3. Create a `.env` file and set environment variables (for example: MongoDB connection, JWT_SECRET, ...)
-4. Start the server:
-   ```bash
-   npm start
-   ```
+   This will start both the MongoDB database (on port 27017) and the Node.js backend (on port 3000). To view logs, run `docker-compose logs -f backend`.
 
-### Frontend
+### Frontend (Local Development)
 1. Go to the `frontend` folder
 2. Install packages:
    ```bash
@@ -52,6 +50,12 @@ frontend/
    npm start
    ```
 
+## Local Database Connection (TablePlus)
+If you want to connect to the local MongoDB instance using tools like TablePlus, use the following details:
+- **Host**: `localhost`
+- **Port**: `27017`
+- **Authentication**: None (by default)
+
 ## Main APIs
 - `/api/expenses` CRUD expenses
 - `/api/categories` CRUD categories
@@ -60,7 +64,7 @@ frontend/
 - `/api/ai/saving-suggestion` Saving suggestions
 
 ## API Documentation
-After starting the backend server, you can access the Swagger API documentation at:
+After starting the backend server (via Docker or locally), you can access the Swagger API documentation at:
 `http://localhost:3000/api-docs`
 
 ## Contribution
