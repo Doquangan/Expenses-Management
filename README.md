@@ -1,74 +1,111 @@
+<h1 align="center">
+Smart Personal Expense Management
+</h1>
 
-# Personal Expense Management System
+<p align="center">
+  A full-stack financial tracking system enhanced with <strong>Google Gemini AI</strong> to provide intelligent saving suggestions and an interactive financial chatbot.
+</p>
 
-## Introduction
-This is a personal expense management project. It helps users control their spending, set limits, receive warnings, and get smart saving suggestions. The system includes a backend (Node.js/Express/MongoDB) and a frontend (React).
+<p align="center">
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
+  <img src="https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white" alt="NodeJS" />
+  <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express" />
+  <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" />
+  <img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
+  <img src="https://img.shields.io/badge/Gemini_AI-1A73E8?style=for-the-badge&logo=google&logoColor=white" alt="Gemini AI" />
+</p>
 
-## Main Features
-- Register, login, JWT authentication
-- Manage expense categories, expenses, and limits
-- Set spending limits for each category and for the whole month
-- Warning when spending is close to or over the limit
-- Smart saving suggestions (rule-based AI)
-- Dashboard with pie and bar charts
-- Modern and easy-to-use interface
+---
 
-## Project Structure
-```
-backend/
-  src/
-    controllers/    // API logic
-    models/         // MongoDB data models
-    routes/         // API routes
-    middlewares/    // Authentication, API protection
-    config/         // Database connection
-frontend/
-  src/
-    pages/          // Main pages: Dashboard, Category, Expense, Limit, Login, Register, Profile
-    components/     // Sidebar, Notification, ...
-```
+## Project Overview
 
-## Installation Guide
-### Backend (using Docker)
-The backend and the MongoDB database are containerized for easy setup.
-1. Make sure you have **Docker** and **Docker Compose** installed.
-2. In the `backend` folder, create a `.env` file and set the required environment variables (e.g. `JWT_SECRET`, `GOOGLE_CLIENT_ID`, etc.). Note that MongoDB connection is automatically overridden in Docker to point to the local container.
-3. In the root directory of the project, run:
+This is not just a standard CRUD expense tracker. It is a comprehensive financial application that helps users monitor their spending, set goals, and gain actionable insights. The integration of **Google Gemini's LLM** elevates the user experience by delivering a conversational interface to query spending habits and receive personalized financial advice.
+
+## Key Features
+
+### AI Financial Assistant (Powered by Gemini)
+- **Smart Saving Suggestions**: Analyzes the user's monthly spending and limits to generate proactive, rule-based alerts and customized saving tips.
+- **Context-Aware Chatbot**: Chat directly with your data. The AI assistant knows your real-time expenses, recent transactions, and budgets, functioning as a 24/7 personal financial advisor (History persisted in MongoDB).
+
+### Secure Authentication
+- Local Authentication with JWT (JSON Web Tokens).
+- **OAuth 2.0 Integration**: Social login through Google and Facebook.
+- Middleware protection to secure all API endpoints.
+
+### Expense & Budget Management
+- **Transactions Management**: Full CRUD operations for daily expenses and incomes.
+- **Categorization**: Group spending into customizable categories.
+- **Limits & Budgets**: Set spending limits per category or globally. The system proactively alerts users before they exceed predefined budgets.
+
+### Interactive Dashboard
+- Clean, modern UI to visualize spending behavior.
+- Real-time pie and bar charts reflecting monthly and categorical data.
+- Alerts and summary cards for immediate financial awareness.
+
+---
+
+## Architecture & Tech Stack
+
+The system follows a modern decoupled architecture:
+
+*   **Frontend**: Built with **React.js**, fully responsive CSS, utilizing hooks for state management.
+*   **Backend**: A RESTful API driven by **Node.js** and **Express.js**. Organized following the MVC (Model-View-Controller) design pattern.
+*   **Database**: **MongoDB** (with Mongoose ODM) for flexible schema design and fast queries.
+*   **AI Integration**: `@google/genai` (Gemini 2.5 Flash SDK) customized with exact system prompts and injected contexts.
+*   **DevOps**: Fully **Dockerized** (Docker Compose) for a seamless "one-click" developer experience across any OS. Containerized MongoDB storage.
+
+
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js (v18+)
+- Docker & Docker Compose
+- A Google Cloud Platform (GCP) Account for Gemini API Key.
+- Google / Facebook OAuth credentials (Optional, for social auth).
+
+### 1. Simple Setup (Using Docker)
+
+The fastest way to get everything running locally:
+
+1. Copy `.env.example` (if available) to `.env` inside the `/backend` folder.
+2. Provide your secrets, specifically `GEMINI_API_KEY` and `JWT_SECRET`:
+   ```env
+   GEMINI_API_KEY=your_gemini_api_key_here
+   JWT_SECRET=your_super_secret_key
+   ```
+3. Boot up the containers from the project root:
    ```bash
    docker-compose up -d --build
    ```
-   This will start both the MongoDB database (on port 27017) and the Node.js backend (on port 3000). To view logs, run `docker-compose logs -f backend`.
+   *The backend will be available at `http://localhost:3000` and MongoDB will be bound to port `27017`.*
 
-### Frontend (Local Development)
-1. Go to the `frontend` folder
-2. Install packages:
-   ```bash
-   npm install
-   ```
-3. Start the React app:
-   ```bash
-   npm start
-   ```
+### 2. Run the Frontend
 
-## Local Database Connection (TablePlus)
-If you want to connect to the local MongoDB instance using tools like TablePlus, use the following details:
-- **Host**: `localhost`
-- **Port**: `27017`
-- **Authentication**: None (by default)
+The React frontend runs separately in development mode:
 
-## Main APIs
-- `/api/expenses` CRUD expenses
-- `/api/categories` CRUD categories
-- `/api/limits` Set/get limits
-- `/api/dashboard/limit-warnings` Limit warnings
-- `/api/ai/saving-suggestion` Saving suggestions
+```bash
+cd frontend
+npm install
+npm start
+```
+*The React app will open automatically at `http://localhost:3001`.*
+
+---
 
 ## API Documentation
-After starting the backend server (via Docker or locally), you can access the Swagger API documentation at:
-`http://localhost:3000/api-docs`
 
-## Contribution
-All contributions, bug reports, or new ideas are welcome via Issues or Pull Requests on Github.
+The backend includes a fully documented **Swagger UI** to easily test endpoints and view the expected JSON schemas.
 
-## Author
-- Doquangan
+After starting the standard Docker containers, browse to:
+👉 **[http://localhost:3000/api-docs](http://localhost:3000/api-docs)**
+
+---
+
+## Contact & Author
+
+Created and maintained by **Doquangan**.
+
+*Interested in my work or looking to collaborate? Let's connect!*
