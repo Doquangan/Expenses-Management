@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
 import { useNotification } from '../../components/Notification';
 import { GoogleIcon, FacebookIcon } from '../../components/Icons';
+import API_BASE from '../../config';
 
 function Login() {
   const navigate = useNavigate();
