@@ -5,22 +5,26 @@ const mongoose = require('mongoose');
 const app = express();
 
 
-// CORS - Allow localhost and future production domain
+// CORS - Allow localhost and production dynamic domain
 const allowedOrigins = [
   'http://localhost:3001',
   'http://localhost:3000',
   process.env.FRONTEND_URL
-].filter(Boolean);
+].filter(Boolean).map(url => url.replace(/\/$/, "")); // Loại bỏ dấu / ở cuối nếu có
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Cho phép nếu không có origin (server-to-server) hoặc nằm trong danh sách
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
       callback(null, true);
     } else {
+      console.log('CORS blocked for origin:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json({ limit: '10mb' }));
