@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../../components/Layout';
+import API_BASE from '../../config';
 import Modal from '../../components/Modal';
 import './Category.css';
 import { useNotification } from '../../components/Notification';
@@ -20,7 +21,7 @@ function Category() {
   useEffect(() => {
     const fetchCategories = async () => {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:3000/api/categories', {
+      const res = await fetch(`${API_BASE}/categories`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();

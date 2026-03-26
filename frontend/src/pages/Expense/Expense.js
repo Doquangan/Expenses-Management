@@ -3,10 +3,9 @@ import { FaEdit, FaTrash } from 'react-icons/fa';
 import Layout from '../../components/Layout';
 import Modal from '../../components/Modal';
 import ImageEditor from '../../components/ImageEditor';
+import API_BASE from '../../config';
 import './Expense.css';
 import { useNotification } from '../../components/Notification';
-
-const API_BASE = 'http://localhost:3000/api';
 
 const getAuthHeaders = () => ({
   'Content-Type': 'application/json',

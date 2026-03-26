@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import './Sidebar.css';
 import { DashboardIcon, WalletIcon, TagIcon, TargetIcon, ChatIcon, UserIcon, LogoutIcon, CalendarIcon } from './Icons';
+import API_BASE from '../config';
 
 function Sidebar() {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ function Sidebar() {
     const fetchUser = async () => {
       const token = localStorage.getItem('token');
       if (!token) return;
-      const res = await fetch('http://localhost:3000/api/users/me', {
+      const res = await fetch(`${API_BASE}/users/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();

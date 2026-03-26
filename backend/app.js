@@ -5,14 +5,32 @@ const mongoose = require('mongoose');
 const app = express();
 
 
-app.use(cors());
+// CORS - Allow localhost and future production domain
+const allowedOrigins = [
+  'http://localhost:3001',
+  'http://localhost:3000',
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+
 app.use(express.json({ limit: '10mb' }));
 
+// Health check for deployment
+app.get('/health', (req, res) => res.status(200).send('OK'));
 
 // Import user routes
 const userRoutes = require('./src/routes/userRoutes');
 app.use('/api/users', userRoutes);
-
 
 // Import category routes
 const categoryRoutes = require('./src/routes/categoryRoutes');
@@ -77,8 +95,8 @@ const dashboardRoutes = require('./src/routes/dashboardRoutes');
 app.use('/api/dashboard', dashboardRoutes);
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB connected'))
+mongoose.connect(process.env.MONGO_URI || process.env.MONGODB_URI)
+  .then(() => console.log('MongoDB connected to Atlas'))
   .catch(err => console.error('MongoDB connection error:', err));
 
 

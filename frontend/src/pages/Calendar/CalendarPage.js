@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Layout from '../../components/Layout';
 import Modal from '../../components/Modal';
+import API_BASE from '../../config';
 import './CalendarPage.css';
 
-const API_BASE = 'http://localhost:3000/api';
+const API_ROOT = API_BASE;
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const MONTH_NAMES = [

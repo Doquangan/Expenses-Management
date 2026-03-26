@@ -1,13 +1,15 @@
-
 import React, { useState, useEffect } from 'react';
 import Layout from '../../components/Layout';
 import Modal from '../../components/Modal';
+import API_BASE from '../../config';
 import { SparkleIcon } from '../../components/Icons';
 import { Pie, Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 import './Dashboard.css';
 
 function Dashboard() {
+  const [summary, setSummary] = useState({ totalExpense: 0, totalIncome: 0, balance: 0 });
+  const [loading, setLoading] = useState(true);
   const [expandedCategories, setExpandedCategories] = useState([]);
   const toggleCategory = (cat) => {
     setExpandedCategories(prev => prev.includes(cat)
@@ -70,9 +72,27 @@ function Dashboard() {
   }, [filterType, filterValue]);
 
   useEffect(() => {
+    const fetchDashboard = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const res = await fetch(`${API_BASE}/dashboard/summary`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (res.ok) setSummary(data);
+      } catch (error) {
+        console.error("Failed to fetch dashboard summary:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDashboard();
+  }, []);
+
+  useEffect(() => {
     const fetchExpenses = async () => {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:3000/api/expenses', {
+      const res = await fetch(`${API_BASE}/expenses`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();

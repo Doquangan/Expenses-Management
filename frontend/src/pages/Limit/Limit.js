@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../../components/Layout';
 import { useNotification } from '../../components/Notification';
+import API_BASE from '../../config';
 import './Limit.css';
 
 function Limit() {
@@ -12,7 +13,7 @@ function Limit() {
   useEffect(() => {
     const fetchCategories = async () => {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:3000/api/categories', {
+      const res = await fetch(`${API_BASE}/categories`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) setCategories(await res.json());

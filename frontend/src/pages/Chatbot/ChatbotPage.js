@@ -1,9 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Layout from '../../components/Layout';
 import { BotIcon, UserIcon, SendIcon, SparkleIcon } from '../../components/Icons';
+import API_BASE from '../../config';
 import './ChatbotPage.css';
-
-const API_BASE = 'http://localhost:3000/api';
 
 const SUGGESTIONS = [
   'Tháng này tôi chi tiêu bao nhiêu?',

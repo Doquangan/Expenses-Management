@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../../components/Layout';
+import API_BASE from '../../config';
 import './Profile.css';
 import { useNotification } from '../../components/Notification';
 
@@ -37,7 +38,7 @@ function Profile() {
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:3000/api/users/me', {
+      const res = await fetch(`${API_BASE}/users/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
