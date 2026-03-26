@@ -29,7 +29,7 @@ function Login() {
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch('http://localhost:3000/api/users/login', {
+      const res = await fetch(`${API_BASE}/users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -83,10 +83,10 @@ function Login() {
         <div className="login-divider">or continue with</div>
 
         <div className="social-buttons">
-          <a href="http://localhost:3000/api/auth/google" className="btn-social">
+          <a href={`${API_BASE}/auth/google`} className="btn-social">
             <GoogleIcon size={18} /> Continue with Google
           </a>
-          <a href="http://localhost:3000/api/auth/facebook" className="btn-social">
+          <a href={`${API_BASE}/auth/facebook`} className="btn-social">
             <FacebookIcon size={18} /> Continue with Facebook
           </a>
         </div>

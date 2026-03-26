@@ -26,7 +26,7 @@ function Limit() {
     const token = localStorage.getItem('token');
     const now = new Date();
     const periodValue = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    const res = await fetch(`http://localhost:3000/api/limits?period=month&periodValue=${periodValue}`, {
+    const res = await fetch(`${API_BASE}/limits?period=month&periodValue=${periodValue}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (res.ok) setLimits(await res.json());
@@ -44,7 +44,7 @@ function Limit() {
       showNotification('Số tiền hạn mức phải lớn hơn 0', 'error');
       return;
     }
-    const res = await fetch('http://localhost:3000/api/limits', {
+    const res = await fetch(`${API_BASE}/limits`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify(body)

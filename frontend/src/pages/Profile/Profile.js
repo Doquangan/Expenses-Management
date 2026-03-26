@@ -19,19 +19,24 @@ function Profile() {
     e.preventDefault();
     setMessage('');
     const token = localStorage.getItem('token');
-    const res = await fetch('http://localhost:3000/api/users/set-password', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ newPassword: newSetPassword })
-    });
-    const data = await res.json();
-    if (res.ok) {
-      showNotification('Đặt mật khẩu thành công!', 'success');
-      setSetPasswordMode(false);
-      setNewSetPassword('');
-      window.location.reload();
-    } else {
-      showNotification(data.message || 'Lỗi đặt mật khẩu', 'error');
+    try {
+      const res = await fetch(`${API_BASE}/users/set-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ newPassword: newSetPassword })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showNotification('Đặt mật khẩu thành công!', 'success');
+        setSetPasswordMode(false);
+        setNewSetPassword('');
+        window.location.reload();
+      } else {
+        showNotification(data.message || 'Lỗi đặt mật khẩu', 'error');
+      }
+    } catch (error) {
+      console.error('Error setting password:', error);
+      showNotification('Lỗi kết nối đến máy chủ', 'error');
     }
   };
 
@@ -54,7 +59,7 @@ function Profile() {
     e.preventDefault();
     setMessage('');
     const token = localStorage.getItem('token');
-    const res = await fetch('http://localhost:3000/api/users/me', {
+    const res = await fetch(`${API_BASE}/users/me`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify(form)
@@ -74,8 +79,8 @@ function Profile() {
     e.preventDefault();
     setMessage('');
     const token = localStorage.getItem('token');
-    const res = await fetch('http://localhost:3000/api/users/change-password', {
-      method: 'POST',
+    const res = await fetch(`${API_BASE}/users/change-password`, {
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ currentPassword, newPassword })
     });

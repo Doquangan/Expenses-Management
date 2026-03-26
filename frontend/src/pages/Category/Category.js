@@ -35,7 +35,7 @@ function Category() {
     setError('');
     setLoading(true);
     const token = localStorage.getItem('token');
-    const res = await fetch('http://localhost:3000/api/categories', {
+    const res = await fetch(`${API_BASE}/categories`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ name: newName.trim(), description: newDesc })
@@ -61,7 +61,7 @@ function Category() {
 
   const updateCategory = async (id, name, description) => {
     const token = localStorage.getItem('token');
-    const res = await fetch(`http://localhost:3000/api/categories/${id}`, {
+    const res = await fetch(`${API_BASE}/categories/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ name, description })
@@ -77,7 +77,7 @@ function Category() {
 
   const handleDelete = async (cat) => {
     const token = localStorage.getItem('token');
-    const res = await fetch(`http://localhost:3000/api/categories/${cat._id || cat.id}`, {
+    const res = await fetch(`${API_BASE}/categories/${cat._id || cat.id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });

@@ -32,7 +32,7 @@ function Dashboard() {
     setShowAiPopup(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:3000/api/ai/saving-suggestion', {
+      const res = await fetch(`${API_BASE}/ai/saving-suggestion`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -54,7 +54,7 @@ function Dashboard() {
           const now = new Date();
           periodValue = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
         }
-        const res = await fetch(`http://localhost:3000/api/dashboard/limit-warnings?period=month&periodValue=${periodValue}`, {
+        const res = await fetch(`${API_BASE}/dashboard/limit-warnings?period=month&periodValue=${periodValue}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
