@@ -9,6 +9,7 @@ import Profile from './pages/Profile/Profile';
 import { NotificationProvider } from './components/Notification';
 import Limit from './pages/Limit/Limit';
 import ChatbotPage from './pages/Chatbot/ChatbotPage';
+import CalendarPage from './pages/Calendar/CalendarPage';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/limits" element={<Limit />} />
           <Route path="/chat" element={<ChatbotPage />} />
+          <Route path="/calendar" element={<CalendarPage />} />
         </Routes>
       </Router>
     </NotificationProvider>

@@ -8,6 +8,7 @@ const ExpenseSchema = new mongoose.Schema({
   date: { type: Date, required: true },
   category: { type: String },
   type: { type: String, enum: ['expense', 'income'], required: true },
+  image: { type: String }, // base64 encoded image (optional)
   createdAt: { type: Date, default: Date.now },
   categoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' }
 });

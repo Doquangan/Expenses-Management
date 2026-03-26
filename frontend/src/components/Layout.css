@@ -9,3 +9,17 @@
   padding: 32px;
   min-height: 100vh;
 }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .app-main {
+    margin-left: 0;
+    padding: 60px 16px 24px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .app-main {
+    padding: 24px 20px;
+  }
+}
