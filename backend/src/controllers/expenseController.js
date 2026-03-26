@@ -3,6 +3,43 @@ const Limit = require('../models/Limit');
 const Category = require('../models/Category');
 const mongoose = require('mongoose');
 
+// Hàm bổ trợ: Lấy categoryId hoặc tự động tạo mới nếu chưa có
+const getOrCreateCategory = async (categoryInput, userId) => {
+  if (!categoryInput) return null;
+
+  // 1. Nếu là ObjectId hợp lệ, tìm trực tiếp
+  if (mongoose.Types.ObjectId.isValid(categoryInput)) {
+    const cat = await Category.findById(categoryInput);
+    return cat ? cat._id : null;
+  }
+
+  // 2. Tìm theo tên (ưu tiên danh mục của user hoặc mặc định)
+  let catDoc = await Category.findOne({
+    name: categoryInput,
+    $or: [{ user: null }, { user: userId }]
+  });
+
+  if (catDoc) return catDoc._id;
+
+  // 3. Nếu chưa có, tạo mới đúng chuẩn
+  const lastCat = await Category.findOne({}).sort({ id: -1 });
+  let nextNumber = 1;
+  if (lastCat && lastCat.id) {
+    const match = lastCat.id.match(/CG(\d{5})/);
+    if (match) {
+      nextNumber = parseInt(match[1], 10) + 1;
+    }
+  }
+  const newId = `CG${String(nextNumber).padStart(5, '0')}`;
+  
+  const newCat = await Category.create({ 
+    id: newId, 
+    name: categoryInput, 
+    user: userId 
+  });
+  return newCat._id;
+};
+
 // Tạo mới expense kèm cảnh báo hạn mức
 exports.create = async (req, res) => {
   try {
@@ -10,21 +47,8 @@ exports.create = async (req, res) => {
     if (type === 'expense' && amount > 0) {
       amount = -Math.abs(amount);
     }
-    // Nếu có category (dưới dạng name), lấy _id từ Category
-    let categoryId = null;
-    if (category) {
-      if (mongoose.Types.ObjectId.isValid(category)) {
-        categoryId = new mongoose.Types.ObjectId(category);
-      } else {
-        // Tìm theo tên
-        let catDoc = await Category.findOne({ name: category });
-        if (!catDoc) {
-          // TỰ ĐỘNG TẠO MỚI NẾU CHƯA CÓ
-          catDoc = await Category.create({ name: category, user: req.user.userId });
-        }
-        categoryId = catDoc._id;
-      }
-    }
+    // Xử lý Category linh hoạt
+    const categoryId = await getOrCreateCategory(category, req.user.userId);
     // Sinh id dạng EP00001 dựa trên số lớn nhất hiện tại
     const lastExpense = await Expense.findOne().sort({ id: -1 });
     let nextNumber = 1;
@@ -117,19 +141,8 @@ exports.update = async (req, res) => {
     if (type === 'expense' && amount > 0) {
       amount = -Math.abs(amount);
     }
-    // Nếu có category (dưới dạng name), lấy _id từ Category
-    let categoryId = null;
-    if (category) {
-      if (mongoose.Types.ObjectId.isValid(category)) {
-        categoryId = new mongoose.Types.ObjectId(category);
-      } else {
-        let catDoc = await Category.findOne({ name: category });
-        if (!catDoc) {
-          catDoc = await Category.create({ name: category, user: req.user.userId });
-        }
-        categoryId = catDoc._id;
-      }
-    }
+    // Xử lý Category linh hoạt khi update
+    const categoryId = await getOrCreateCategory(category, req.user.userId);
     const updated = await Expense.findOneAndUpdate(
       { id, userId: req.user.userId },
       { amount, description, date, category, categoryId, type, image },
