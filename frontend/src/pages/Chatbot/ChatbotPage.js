@@ -68,7 +68,17 @@ function ChatbotPage() {
   const [conversations, setConversations] = useState([]);
   const [activeConversationId, setActiveConversationId] = useState(null);
   const [loadingConversations, setLoadingConversations] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
+
+  // Auto-close sidebar on window resize for mobile
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) setSidebarOpen(false);
+      else setSidebarOpen(true);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
@@ -205,6 +215,10 @@ function ChatbotPage() {
   return (
     <>
       <div className="chatbot-page">
+        {/* Mobile Overlay */}
+        {sidebarOpen && (
+          <div className="chat-sidebar-overlay" onClick={() => setSidebarOpen(false)} />
+        )}
         {/* ===== SIDEBAR ===== */}
         <aside className={`chat-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
           <div className="sidebar-header">
