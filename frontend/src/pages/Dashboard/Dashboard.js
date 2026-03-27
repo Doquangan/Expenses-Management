@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Layout from '../../components/Layout';
 import Modal from '../../components/Modal';
 import API_BASE from '../../config';
 import { SparkleIcon } from '../../components/Icons';
@@ -218,7 +217,7 @@ function Dashboard() {
   };
 
   return (
-    <Layout>
+    <>
       <div className="dashboard-page">
         <div className="dashboard-top">
           <h2 className="page-title">Dashboard</h2>
@@ -355,7 +354,7 @@ function Dashboard() {
           ))}
         </div>
       </div>
-    </Layout>
+    </>
   );
 }
 

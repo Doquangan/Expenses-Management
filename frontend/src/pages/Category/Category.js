@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Layout from '../../components/Layout';
 import API_BASE from '../../config';
 import Modal from '../../components/Modal';
 import './Category.css';
@@ -91,7 +90,7 @@ function Category() {
   };
 
   return (
-    <Layout>
+    <>
       <div className="category-page">
         <h2 className="page-title">Manage Categories</h2>
         <p className="page-subtitle">Add and organize your expense categories.</p>
@@ -160,7 +159,7 @@ function Category() {
           </div>
         </Modal>
       )}
-    </Layout>
+    </>
   );
 }
 

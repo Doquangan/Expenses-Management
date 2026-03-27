@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Layout from '../../components/Layout';
 import { useNotification } from '../../components/Notification';
 import API_BASE from '../../config';
 import './Limit.css';
@@ -60,7 +59,7 @@ function Limit() {
   };
 
   return (
-    <Layout>
+    <>
       <div className="limit-page">
         <h2 className="page-title">Spending Limits</h2>
 
@@ -112,7 +111,7 @@ function Limit() {
           )}
         </div>
       </div>
-    </Layout>
+    </>
   );
 }
 

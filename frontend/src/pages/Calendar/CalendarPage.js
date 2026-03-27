@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import Layout from '../../components/Layout';
 import Modal from '../../components/Modal';
 import API_BASE from '../../config';
 import './CalendarPage.css';
@@ -114,7 +113,7 @@ function CalendarPage() {
   const selectedDayData = selectedDate ? groupedByDate[selectedDate] : null;
 
   return (
-    <Layout>
+    <>
       <div className="calendar-page">
         <h2 className="page-title">Calendar</h2>
 
@@ -225,7 +224,7 @@ function CalendarPage() {
           </Modal>
         )}
       </div>
-    </Layout>
+    </>
   );
 }
 

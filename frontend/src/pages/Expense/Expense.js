@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
-import Layout from '../../components/Layout';
 import Modal from '../../components/Modal';
 import ImageEditor from '../../components/ImageEditor';
 import API_BASE from '../../config';
@@ -199,7 +198,7 @@ function Expense() {
   const [isNewCategoryMode, setIsNewCategoryMode] = useState(false);
 
   return (
-    <Layout>
+    <>
       <div className="expense-page">
         <h2 className="page-title">Manage Expenses</h2>
         <div className="expense-toolbar">
@@ -367,7 +366,7 @@ function Expense() {
           </Modal>
         )}
       </div>
-    </Layout>
+    </>
   );
 }
 

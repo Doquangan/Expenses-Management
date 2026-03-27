@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Layout from '../../components/Layout';
 import API_BASE from '../../config';
 import './Profile.css';
 import { useNotification } from '../../components/Notification';
@@ -94,12 +93,12 @@ function Profile() {
     }
   };
 
-  if (!user) return <Layout><div className="empty-state">Loading...</div></Layout>;
+  if (!user) return <><div className="empty-state">Loading...</div></>;
 
   const isSocialLogin = user && (user.loginType === 'google' || user.loginType === 'facebook');
 
   return (
-    <Layout>
+    <>
       <div className="profile-page">
         <h2 className="page-title">Profile</h2>
 
@@ -180,7 +179,7 @@ function Profile() {
 
         {message && <div className="error-message">{message}</div>}
       </div>
-    </Layout>
+    </>
   );
 }
 

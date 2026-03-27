@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import Layout from '../../components/Layout';
 import { BotIcon, UserIcon, SendIcon, SparkleIcon } from '../../components/Icons';
 import API_BASE from '../../config';
 import './ChatbotPage.css';
@@ -204,7 +203,7 @@ function ChatbotPage() {
 
   // ==================== RENDER ====================
   return (
-    <Layout>
+    <>
       <div className="chatbot-page">
         {/* ===== SIDEBAR ===== */}
         <aside className={`chat-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
@@ -330,7 +329,7 @@ function ChatbotPage() {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 }
 
